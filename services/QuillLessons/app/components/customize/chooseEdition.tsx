@@ -23,7 +23,7 @@ class ChooseEdition extends React.Component<any, any> {
       showNamingModal: false,
       newEditionUid: '',
       newEditionName: '',
-      selectState: getParameterByName('preview') || getParameterByName('classroom_activity_id'),
+      selectState: getParameterByName('preview') || getParameterByName('classroom_unit_id'),
       showSignupModal: false
     }
 
@@ -66,9 +66,9 @@ class ChooseEdition extends React.Component<any, any> {
 
   editEdition(editionUid:string) {
     let route
-    const classroomActivityId = getParameterByName('classroom_activity_id')
-    if (classroomActivityId) {
-      route = `/customize/${this.props.params.lessonID}/${editionUid}?&classroom_activity_id=${classroomActivityId}`
+    const classroomUnitId = getParameterByName('classroom_unit_id')
+    if (classroomUnitId) {
+      route = `/customize/${this.props.params.lessonID}/${editionUid}?&classroom_unit_id=${classroomUnitId}`
     } else {
       route = `/customize/${this.props.params.lessonID}/${editionUid}`
     }
@@ -91,9 +91,9 @@ class ChooseEdition extends React.Component<any, any> {
     if (this.state.newEditionName) {
       saveEditionName(this.state.newEditionUid, this.state.newEditionName)
       let route
-      const classroomActivityId = getParameterByName('classroom_activity_id')
-      if (classroomActivityId) {
-        route = `/customize/${this.props.params.lessonID}/${this.state.newEditionUid}?&classroom_activity_id=${classroomActivityId}`
+      const classroomUnitId = getParameterByName('classroom_unit_id')
+      if (classroomUnitId) {
+        route = `/customize/${this.props.params.lessonID}/${this.state.newEditionUid}?&classroom_unit_id=${classroomUnitId}`
       } else {
         route = `/customize/${this.props.params.lessonID}/${this.state.newEditionUid}`
       }
@@ -103,12 +103,12 @@ class ChooseEdition extends React.Component<any, any> {
 
   selectAction(editionKey: string) {
     const lessonId = this.props.params.lessonID
-    const classroomActivityId = getParameterByName('classroom_activity_id')
+    const classroomUnitId = getParameterByName('classroom_unit_id')
     if (getParameterByName('preview')) {
       const editionId = editionKey ? editionKey : ''
       return this.props.router.push(`teach/class-lessons/${lessonId}/preview/${editionId}`)
-    } else if (classroomActivityId) {
-      return setEditionId(classroomActivityId, editionKey, () => window.location.href = `#/teach/class-lessons/${lessonId}?&classroom_activity_id=${classroomActivityId}`)
+    } else if (classroomUnitId) {
+      return setEditionId(classroomUnitId, editionKey, () => window.location.href = `#/teach/class-lessons/${lessonId}?&classroom_unit_id=${classroomUnitId}`)
     }
   }
 
@@ -126,7 +126,7 @@ class ChooseEdition extends React.Component<any, any> {
     let text
     if (getParameterByName('preview')) {
       text = 'You are previewing this lesson:'
-    } else if (getParameterByName('classroom_activity_id')) {
+    } else if (getParameterByName('classroom_unit_id')) {
       text = 'You are launching this lesson:'
     } else {
       text = 'You are customizing this lesson:'
@@ -166,7 +166,7 @@ class ChooseEdition extends React.Component<any, any> {
   }
 
   renderEditions() {
-    const {editions, user_id} = this.props.customize
+    const { editions, user_id } = this.props.customize
     const sessionEditionId:string|undefined = this.props.classroomSessions.data ? this.props.classroomSessions.data.edition_id : undefined
     if (Object.keys(editions).length > 0) {
       const quillEditions:Array<JSX.Element>  = []

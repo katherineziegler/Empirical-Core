@@ -28,21 +28,21 @@ export function getCurrentUserAndCoteachersFromLMS() {
   }
 }
 
-export function getEditionMetadataForUserIds(userIds:Array<Number>, lessonId:string) {
+export function getEditionMetadataForUserIds(userIds:Array<Number>, activityId:string) {
   return function (dispatch) {
-    socket.instance.on(`editionMetadataForLesson:${lessonId}`, (editions) => {
+    socket.instance.on(`editionMetadataForLesson:${activityId}`, (editions) => {
       dispatch(filterEditionsByUserIds(userIds, editions))
     })
-    socket.instance.emit('getAllEditionMetadataForLesson', { lessonId });
+    socket.instance.emit('getAllEditionMetadataForLesson', { activityId });
   };
 }
 
-export function getEditionMetadata(lessonId:string, editionId:string) {
+export function getEditionMetadata(activityId:string, editionId:string) {
   return function (dispatch) {
-    socket.instance.on(`editionMetadataForLesson:${lessonId}`, (editions) => {
+    socket.instance.on(`editionMetadataForLesson:${activityId}`, (editions) => {
       setEditionMetadata(editions)
     })
-    socket.instance.emit('getEditionMetadataForLesson', { lessonId, editionId });
+    socket.instance.emit('getEditionMetadataForLesson', { activityId, editionId });
   };
 }
 
@@ -75,31 +75,43 @@ export function clearEditionQuestions() {
   }
 }
 
-export function createNewEdition(editionId:string|null, lessonId:string, userId:Number|string, classroomActivityId?:string, callback?:any) {
+export function createNewEdition(
+  editionId:string|null,
+  activityId:string,
+  userId:Number|string,
+  classroomUnitId?:string,
+  callback?:any
+) {
   let newEditionData, newEdition;
   const newEditionKey = uuid();
   if (editionId) {
-    newEditionData = {lesson_id: lessonId, edition_id: editionId, user_id: userId, id: newEditionKey}
+    newEditionData = {activity_id: activityId, edition_id: editionId, user_id: userId, id: newEditionKey}
   } else {
-    newEditionData = {lesson_id: lessonId, user_id: userId, id: newEditionKey}
+    newEditionData = {activity_id: activityId, user_id: userId, id: newEditionKey}
   }
   socket.instance.emit('createNewEdition', { editionData: newEditionData });
   socket.instance.on(`editionCreated:${newEditionKey}`, () => {
     socket.instance.removeAllListeners(`editionCreated:${newEditionKey}`)
     if (callback) {
-      callback(lessonId, newEditionKey, classroomActivityId)
+      callback(activityId, newEditionKey, classroomUnitId)
     }
   })
   return newEditionKey
 }
 
-export function createNewAdminEdition(editionId:string|null, lessonId:string, userId:Number|string, callback?:any, name?:string) {
+export function createNewAdminEdition(
+  editionId:string|null,
+  activityId:string,
+  userId:Number|string,
+  callback?:any,
+  name?:string
+) {
   let newEditionData, newEdition, questions;
   const newEditionKey = uuid();
   if (editionId) {
-    newEditionData = {id: newEditionKey, lesson_id: lessonId, edition_id: editionId, user_id: userId, name: name, flags: ['alpha']}
+    newEditionData = {id: newEditionKey, activity_id: activityId, edition_id: editionId, user_id: userId, name: name, flags: ['alpha']}
   } else {
-    newEditionData = {id: newEditionKey, lesson_id: lessonId, user_id: userId, name: name, flags: ['alpha']}
+    newEditionData = {id: newEditionKey, activity_id: activityId, user_id: userId, name: name, flags: ['alpha']}
     questions = [lessonSlideBoilerplates['CL-LB'], lessonSlideBoilerplates['CL-EX']]
   }
   socket.instance.emit('createNewEdition', {
@@ -109,7 +121,7 @@ export function createNewAdminEdition(editionId:string|null, lessonId:string, us
   socket.instance.on(`editionCreated:${newEditionKey}`, () => {
     socket.instance.removeAllListeners(`editionCreated:${newEditionKey}`)
     if (callback) {
-      callback(lessonId, newEditionKey)
+      callback(activityId, newEditionKey)
     } else {
       return newEditionKey
     }
@@ -117,7 +129,7 @@ export function createNewAdminEdition(editionId:string|null, lessonId:string, us
 }
 
 export function saveEditionName(editionId:string, name:string) {
-  const editionMetadata = {id: editionId, name}
+  const editionMetadata = { id: editionId, name }
   socket.instance.emit('updateEditionMetadata', { editionMetadata });
 }
 

@@ -40,9 +40,9 @@ class Customize extends React.Component<customizeProps> {
       props.dispatch(getClassLesson(props.params.lessonID))
     }
 
-    const ca_id: string|null = getParameterByName('classroom_activity_id')
-    if (ca_id) {
-      props.dispatch(startListeningToSession(ca_id))
+    const classroomUnitId: string|null = getParameterByName('classroom_unit_id')
+    if (classroomUnitId) {
+      props.dispatch(startListeningToSession(classroomUnitId))
     }
 
     this.goToSuccessPage = this.goToSuccessPage.bind(this)
@@ -66,9 +66,9 @@ class Customize extends React.Component<customizeProps> {
   }
 
   goToSuccessPage() {
-    const classroomActivityId = getParameterByName('classroom_activity_id')
+    const classroomUnitId = getParameterByName('classroom_unit_id')
     let link = `/customize/${this.props.params.lessonID}/${this.props.params.editionID}/success`
-    link = classroomActivityId ? link.concat(`?&classroom_activity_id=${classroomActivityId}`) : link
+    link = classroomUnitId ? link.concat(`?&classroom_unit_id=${classroomUnitId}`) : link
     this.props.router.push(link)
   }
 
