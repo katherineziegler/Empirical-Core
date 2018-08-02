@@ -8,7 +8,8 @@ function _isRoleAuthorized(permittedRoles, currentRole) {
 }
 
 function _belongsToSession(data, token) {
-  return data.classroomUnitId == token.data.classroom_unit_id;
+  const regexedClassroomUnitId = new RegExp('^' + token.data.classroom_unit_id)
+  return regexedClassroomUnitId.test(data.classroomSessionId);
 }
 
 function _reportError(errorText, data, token, client) {
