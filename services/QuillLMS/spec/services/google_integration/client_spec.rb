@@ -14,7 +14,7 @@ describe GoogleIntegration::Client do
     )
 
     expect(api_client)
-      .to receive_message_chain(:new).with(application_name: 'quill')
+      .to receive_message_chain(:new)
       .and_return(api_client_instance)
 
     expect(token_refresher).to receive_message_chain(:new, :refresh)
