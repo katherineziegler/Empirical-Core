@@ -194,8 +194,8 @@ class Teachers::UnitsController < ApplicationController
          state.completed,
          activities.id AS activity_id,
          activities.uid as activity_uid,
-         (SELECT COUNT(id) FROM activity_sessions WHERE is_final_score = true AND classroom_unit_id = cu.id AND activity_sessions.visible)  AS completed_count,
-         (SELECT (SUM(percentage)*100) FROM activity_sessions WHERE is_final_score = true AND classroom_unit_id = cu.id AND activity_sessions.visible)  AS classroom_cumulative_score,
+         (SELECT COUNT(id) FROM activity_sessions WHERE is_final_score = true AND classroom_unit_id = cu.id AND activity_sessions.visible AND activity_sessions.activity_id = activities.id)  AS completed_count,
+         (SELECT (SUM(percentage)*100) FROM activity_sessions WHERE is_final_score = true AND classroom_unit_id = cu.id AND activity_sessions.activity_id = activities.id AND activity_sessions.visible)  AS classroom_cumulative_score,
          (SELECT COUNT(DISTINCT user_id) FROM activity_sessions WHERE state = 'started' AND classroom_unit_id = cu.id AND activity_sessions.activity_id = activities.id AND activity_sessions.visible)  AS started_count,
          EXTRACT(EPOCH FROM units.created_at) AS unit_created_at,
          EXTRACT(EPOCH FROM ua.created_at) AS unit_activity_created_at,
@@ -209,7 +209,7 @@ class Teachers::UnitsController < ApplicationController
         INNER JOIN activities ON ua.activity_id = activities.id
         INNER JOIN classrooms ON cu.classroom_id = classrooms.id
         LEFT JOIN students_classrooms ON students_classrooms.classroom_id = classrooms.id AND students_classrooms.visible
-        LEFT JOIN activity_sessions AS act_sesh ON act_sesh.classroom_unit_id = cu.id
+        LEFT JOIN activity_sessions AS act_sesh ON act_sesh.classroom_unit_id = cu.id AND act_sesh.activity_id = activities.id
         JOIN users AS unit_owner ON unit_owner.id = units.user_id
         LEFT JOIN classroom_unit_activity_states AS state
           ON state.unit_activity_id = ua.id
